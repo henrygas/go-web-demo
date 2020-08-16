@@ -23,7 +23,7 @@ func (hs *HttpServer) Start() error {
 	http.HandleFunc("/", hs.index)
 	http.HandleFunc("/login", hs.login)
 	http.HandleFunc("/upload", hs.upload)
-	if err := http.ListenAndServe(address, nil); err != nil {
+	if err := http.ListenAndServe(Address, nil); err != nil {
 		log.Println("failed to http.ListenAndServe, err: ", err)
 		return err
 	} else {
@@ -55,7 +55,7 @@ func (hs *HttpServer) index(w http.ResponseWriter, r *http.Request) {
 func (hs *HttpServer) login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Method: ", r.Method)
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles(fmt.Sprintf("%s/login.gtpl", templateDir))
+		t, _ := template.ParseFiles(fmt.Sprintf("%s/login.gtpl", TemplateDir))
 		_ = t.Execute(w, nil)
 	} else if err := r.ParseForm(); err != nil {
 		fmt.Println("failed to r.ParseForm(), err: ", err)
@@ -75,7 +75,7 @@ func (hs *HttpServer) upload(w http.ResponseWriter, r *http.Request) {
 		_, _ = io.WriteString(h, strconv.FormatInt(crutime, 10))
 		token := fmt.Sprintf("%x", h.Sum(nil))
 
-		t, _ := template.ParseFiles(fmt.Sprintf("%s/upload.gtpl", templateDir))
+		t, _ := template.ParseFiles(fmt.Sprintf("%s/upload.gtpl", TemplateDir))
 		_ = t.Execute(w, token)
 	} else if err := r.ParseMultipartForm(32 << 20); err != nil {
 		log.Println("failed to r.ParseMultipartForm, err: ", err)
@@ -93,7 +93,7 @@ func (hs *HttpServer) upload(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		f, err := os.OpenFile(fmt.Sprintf("%s/%s", testDir, handler.Filename), os.O_WRONLY|os.O_CREATE, 0666)
+		f, err := os.OpenFile(fmt.Sprintf("%s%s%s", TestDir, os.PathSeparator, handler.Filename), os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
 			log.Println("failed to os.OpenFile(), err: ", err)
 			return
