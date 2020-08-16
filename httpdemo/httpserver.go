@@ -1,11 +1,12 @@
 package httpdemo
 
 import (
-	"fmt"
-	"log"
+	"context"
 	"crypto/md5"
+	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 )
 
 type HttpServer struct {
+	ud *UserDao
 }
 
 func NewHttpServer() (*HttpServer, error) {
@@ -20,6 +22,14 @@ func NewHttpServer() (*HttpServer, error) {
 }
 
 func (hs *HttpServer) Start() error {
+	ud, err := NewUserDao()
+	if err != nil {
+		log.Println("failed to NewUserDao(), err: ", err)
+		return err
+	} else {
+		hs.ud = ud
+	}
+
 	http.HandleFunc("/", hs.index)
 	http.HandleFunc("/login", hs.login)
 	http.HandleFunc("/upload", hs.upload)
@@ -71,6 +81,10 @@ func (hs *HttpServer) login(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte(ERROR_AGE_INVALID))
 			return
 		}
+		hs.ud.CreateUserinfo(context.Background(), &Userinfo{
+			Username:   r.Form.Get("username"),
+			Departname: r.Form.Get("departname"),
+		})
 		_, _ = w.Write([]byte(SUCC_INFO))
 	}
 }
