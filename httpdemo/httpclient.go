@@ -12,14 +12,13 @@ import (
 )
 
 type HttpClient struct {
-
 }
 
 func NewHttpClient() (*HttpClient, error) {
 	return &HttpClient{}, nil
 }
 
-func (hc *HttpClient) UploadFile(filename string, targeturl string) error {
+func (hc *HttpClient) UploadFile(filename string, filefullpath string, targeturl string) error {
 	bodyBuf := &bytes.Buffer{}
 	bodyWriter := multipart.NewWriter(bodyBuf)
 
@@ -29,7 +28,7 @@ func (hc *HttpClient) UploadFile(filename string, targeturl string) error {
 		return err
 	}
 
-	fh, err := os.Open(filename)
+	fh, err := os.Open(filefullpath)
 	if err != nil {
 		log.Println("failed to Open file, err: ", err)
 		return err
@@ -62,4 +61,3 @@ func (hc *HttpClient) UploadFile(filename string, targeturl string) error {
 
 	return nil
 }
-

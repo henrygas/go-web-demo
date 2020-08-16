@@ -49,7 +49,7 @@ func StartUploadFile() {
 		return
 	}
 
-	err = hc.UploadFile(httpdemo.UploadFile2, httpdemo.UploadUrl)
+	err = hc.UploadFile(httpdemo.UploadFile2Name, httpdemo.UploadFile2Fullpath, httpdemo.UploadUrl)
 	if err != nil {
 		log.Println("failed to UploadFile(), err: ", err)
 		return
@@ -59,6 +59,6 @@ func StartUploadFile() {
 func main() {
 	//go StartTcpServer()
 	//StartTcpClient()
-	go StartHttpServer()
-	StartUploadFile()
+	StartHttpServer()
+	//StartUploadFile()
 }

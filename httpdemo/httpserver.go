@@ -36,10 +36,6 @@ func (hs *HttpServer) index(w http.ResponseWriter, r *http.Request) {
 		log.Println("failed to parseForm, err: ", err)
 		return
 	} else {
-		fmt.Println("r.Form: ", r.Form)
-		fmt.Println("r.Path: ", r.URL.Path)
-		fmt.Println("r.Scheme: ", r.URL.Scheme)
-		fmt.Println("r.url_long: ", r.Form["url_long"])
 		for k, v := range r.Form {
 			fmt.Println("key: ", k, ", value: ", v)
 		}
@@ -60,10 +56,22 @@ func (hs *HttpServer) login(w http.ResponseWriter, r *http.Request) {
 	} else if err := r.ParseForm(); err != nil {
 		fmt.Println("failed to r.ParseForm(), err: ", err)
 	} else {
-		fmt.Println("username: ", r.Form["username"])
-		fmt.Println("password: ", r.Form["password"])
-		//_, _ = w.Write([]byte(r.Form.Get("username")))
-		template.HTMLEscapeString(r.Form.Get("username"))
+		if len(r.Form.Get("username")) == 0 {
+			_, _ = w.Write([]byte(ERROR_USERNAME_INVALID))
+			return
+		}
+		if len(r.Form.Get("password")) == 0 {
+			_, _ = w.Write([]byte(ERROR_PASSWORD_INVALID))
+			return
+		}
+		if age, err := strconv.Atoi(r.Form.Get("age")); err != nil {
+			_, _ = w.Write([]byte(err.Error()))
+			return
+		} else if age <= 0 || age > 100 {
+			_, _ = w.Write([]byte(ERROR_AGE_INVALID))
+			return
+		}
+		_, _ = w.Write([]byte(SUCC_INFO))
 	}
 }
 
@@ -80,20 +88,20 @@ func (hs *HttpServer) upload(w http.ResponseWriter, r *http.Request) {
 	} else if err := r.ParseMultipartForm(32 << 20); err != nil {
 		log.Println("failed to r.ParseMultipartForm, err: ", err)
 	} else {
-		file, handler, err := r.FormFile("uploadfile")
+		file, fh, err := r.FormFile("uploadfile")
 		if err != nil {
 			fmt.Println("failed to r.FormFile(), err: ", err)
 			return
 		}
 		defer file.Close()
 
-		_, err = fmt.Fprintf(w, "%v", handler.Header)
+		_, err = fmt.Fprintf(w, "%v", fh.Header)
 		if err != nil {
 			log.Println("failed to fmt.Fprintf(), err: ", err)
 			return
 		}
 
-		f, err := os.OpenFile(fmt.Sprintf("%s%s%s", TestDir, os.PathSeparator, handler.Filename), os.O_WRONLY|os.O_CREATE, 0666)
+		f, err := os.OpenFile(fmt.Sprintf("%s/%s", TestDir, fh.Filename), os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
 			log.Println("failed to os.OpenFile(), err: ", err)
 			return
