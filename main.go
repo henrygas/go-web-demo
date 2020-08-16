@@ -1,6 +1,7 @@
 package main
 
 import (
+	"go-web/httpdemo"
 	"go-web/tcpdemo"
 	"log"
 )
@@ -29,7 +30,18 @@ func StartTcpClient() {
 	}
 }
 
+func StartNewHttpServer() {
+	if hs, err := httpdemo.NewHttpServer(); err != nil {
+		log.Println("failed to NewHttpServer(), err: ", err)
+		return
+	} else if err := hs.Start(); err != nil {
+		log.Println("failed to hs.Start(), err: ", err)
+		return
+	}
+}
+
 func main() {
-	go StartTcpServer()
-	StartTcpClient()
+	StartNewHttpServer()
+	//go StartTcpServer()
+	//StartTcpClient()
 }
