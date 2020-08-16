@@ -32,7 +32,6 @@ func (tc *TcpClient) Start() error {
 	clientName, _ := reader.ReadString('\n')
 	trimmedClientName := strings.Trim(clientName, "\r\n")
 
-
 	for {
 		fmt.Println("[Client]What do you want to send to server?")
 		content, _ := reader.ReadString('\n')

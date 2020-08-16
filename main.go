@@ -30,18 +30,35 @@ func StartTcpClient() {
 	}
 }
 
-func StartNewHttpServer() {
+func StartHttpServer() {
 	if hs, err := httpdemo.NewHttpServer(); err != nil {
 		log.Println("failed to NewHttpServer(), err: ", err)
 		return
 	} else if err := hs.Start(); err != nil {
 		log.Println("failed to hs.Start(), err: ", err)
 		return
+	} else {
+		log.Println("succ to Start http server")
+	}
+}
+
+func StartUploadFile() {
+	hc, err := httpdemo.NewHttpClient()
+	if err != nil {
+		log.Println("failed to NewHttpClient(), err: ", err)
+		return
+	}
+
+	err = hc.UploadFile(httpdemo.UploadFile2Name, httpdemo.UploadFile2Fullpath, httpdemo.UploadUrl)
+	if err != nil {
+		log.Println("failed to UploadFile(), err: ", err)
+		return
 	}
 }
 
 func main() {
-	StartNewHttpServer()
 	//go StartTcpServer()
 	//StartTcpClient()
+	StartHttpServer()
+	//StartUploadFile()
 }
