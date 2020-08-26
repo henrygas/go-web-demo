@@ -3,6 +3,7 @@ package httpdemo
 type Userinfo struct {
 	Uid        int32  `db:"uid"`
 	Username   string `db:"username"`
+	Password   string `db:"password"`
 	Departname string `db:"departname"`
 	Created    int64  `db:"created"`
 }
